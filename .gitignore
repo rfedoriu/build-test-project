@@ -1,0 +1,23 @@
+#
+# .gitignore sample file
+# --------------------------
+#
+# http://www.kernel.org/pub/software/scm/git/docs/gitignore.html
+#
+# Feel free to add more examples, on commented lines.
+#
+#       ignore objects and archives, anywhere in the tree.
+#       *.[oa]
+#
+#       ignore generated html files,
+#       *.html
+#
+#       except foo.html which is maintained by hand
+#       !foo.html
+#
+#       vmlinux*
+#       !/vmlinux*
+#
+#       The line with !/vmlinux*  prevents git from ignoring arch/foo/kernel/vmlinux.lds.S.
+#
+

@@ -1,0 +1,8 @@
+README for build-test-project
+--------------------------------
+
+This file is for project description/summary.
+The project is located on github at: git@github.com:rfedoriu/build-test-project.git
+and can be cloned with the following command, but first you need to be added as a project collaborator:
+git clone git@github.com:rfedoriu/build-test-project.git
+
