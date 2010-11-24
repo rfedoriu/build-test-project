@@ -1,0 +1,93 @@
+<project name="bamboo" basedir=".." default="init">
+
+    
+    <!--
+	Wrapper for calling deploy/deployment.xml on Bamboo server.
+	Reason is that the 'deploy' dir is a submodule, and the 'Git'
+	plugin on Bamboo doesn't have the ability to init/update a 
+	submodule when the main superproject is checked out.
+
+	This simply takes care of the submodule handling, and passes all
+	params off to the deploy/deployment.xml ant script.
+    -->
+
+    <target name="init">
+        <antcall target="submodule-init" />
+        <antcall target="submodule-update" />
+        <antcall target="submodule-master-branch" />
+        <ant antfile="deploy/deployment.xml" target="standard-deployment" />
+    </target>
+
+    <target name="submodule-init">
+        <gittish command="submodule">
+		<args>
+			<arg value="init" />
+		</args>
+        </gittish>
+    </target>
+
+	<!-- 
+	This initializes and updates all existing submodules, and populates the dir's. 
+	-->
+    <target name="submodule-update">
+    	<gittish command="submodule">
+    		<args>
+    			<arg value="update" />
+    		</args>
+    	</gittish>
+    </target>
+	
+	
+	<!--
+		If submodule is updated, and a previous tag is required to build,
+		the tag will use the old version of the submodule. In the case of
+		'deploy', this is not desirable. Always use the 'master' branch's
+		latest.
+	-->
+	<target name="submodule-master-branch">
+		<exec executable="git" dir="deploy" failonerror="false">
+			<arg value="checkout" />
+			<arg value="master" />
+		</exec>
+		<exec executable="git" dir="deploy" failonerror="false">
+			<arg value="pull" />
+			<arg value="origin" />
+			<arg value="master" />
+		</exec>
+	</target>
+	
+	
+	<!-- rollback based on diff between latest and prior tagged builds -->
+	<target name="rollback-deployment">
+        <antcall target="submodule-init" />
+        <antcall target="submodule-update" />
+        <antcall target="submodule-master-branch" />
+        <ant antfile="deploy/deployment.xml" target="rollback-previous" />
+	</target>
+
+	<!-- rollback based on backup made before latest build was installed -->
+	<target name="rollback-backup">
+        <antcall target="submodule-init" />
+        <antcall target="submodule-update" />
+        <antcall target="submodule-master-branch" />
+        <ant antfile="deploy/deployment.xml" target="rollback-direct" />
+	</target>
+	
+
+<!-- named so to avoid override clashing with same git macro in imported files --> 
+<macrodef name="gittish">
+<attribute name="command" />
+<attribute name="dir" default="" />
+<element name="args" optional="true" />
+<sequential>
+<echo message="git @{command}" />
+<exec executable="git" dir="@{dir}" failonerror="true">
+<arg value="@{command}" />
+<args/>
+</exec>
+</sequential>
+</macrodef>
+
+ 
+</project>
+
