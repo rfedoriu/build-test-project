@@ -28,16 +28,32 @@
 # we are already in the runtime root, compliments of invoking 'install.sh'
 
 
+
+cat <<EOF
+*****************************************************************************
+*                                                                           *
+*              APP INSTALL CUSTOM SCRIPT FOR build-test-project             *
+*                                                                           *
+*****************************************************************************
+
+EOF
+
 #####
+## ruby installation
 ##
-## ruby install tests
-##
+#echo -n "using bundle: `which bundle`"
 #bundle install vendor
+#
+#echo -n "using rake: `which rake`"
 #rake db:migrate
 #
 ## ensure passenger refreshes things...
+#echo touching tmp/restart.txt
 #test -d tmp || mkdir tmp && touch tmp/restart.txt
 #
+
+
+
 
 
 #####

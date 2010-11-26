@@ -17,6 +17,7 @@
 	</patternset>
 	
 	<patternset id="deploy.patchlist">
+		<include name="build/app_install.sh" />
 		<includesfile name="${deltafilelist}" />
 	</patternset>
 	
