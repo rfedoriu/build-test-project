@@ -1,0 +1,4 @@
+hello
+goodbye
+Fri Nov 26 09:43:46 EST 2010
+hello again
