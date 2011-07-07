@@ -21,3 +21,4 @@
 #       The line with !/vmlinux*  prevents git from ignoring arch/foo/kernel/vmlinux.lds.S.
 #
 
+.project

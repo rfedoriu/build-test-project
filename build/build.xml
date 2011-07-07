@@ -1,0 +1,101 @@
+<project name="build-test-project" basedir="." default="init">
+
+<!-- for citynews_mobile_admin build/deploy -->
+	
+	
+
+	<patternset id="deploy.excludelist">
+		<exclude name=".git*"/>
+		<exclude name=".git/**"/>
+		<exclude name="deltafilelist.txt"/>
+		<exclude name="README" />
+		<exclude name="_readme.txt" />
+		<exclude name="exclude.txt" />
+		<exclude name="build/*.xml" />
+		<exclude name="deploy/**" />
+		<exclude name="doc/**" />
+	</patternset>
+	
+	<patternset id="deploy.patchlist">
+		<include name="build/app_install.sh" />
+		<includesfile name="${deltafilelist}" />
+	</patternset>
+	
+	
+	
+
+    <target name="default">
+    	<antcall target="full-build" />
+    </target>
+
+	
+	
+	<!--
+		For full app deployments. 
+		The working dir has been checked out as an integration branch, and the incoming
+		branch changes merged into it. Now the app's custom build script takes over
+		to prepare the release directory for packaging.
+	-->
+	<target name="full-build">
+		<echo>This is the full app build </echo>
+		
+		<copy todir="${project.release.dir}">
+			<fileset dir="${project.root.dir}">
+				<patternset refid="deploy.excludelist"/>
+			</fileset>
+		</copy>
+		
+		<antcall target="rename-runtime" />
+	</target>
+
+
+	
+	
+	
+	<!-- 
+		For patch deployments. Used mainly by Bamboo.
+		A filelist of modifications is copied into the ${project.release.dir}
+		(typically a dir named "release/$project-name" parallel to the codebase/project dir).
+		All that should be required is for custom dir/file/config changes, then pack it
+		up and deploy it.
+	-->
+	<target name="patch-build">
+		
+		<!-- copy files to release-dir that are diff'd between incoming-branch and release-branch -->
+		<copy todir="${project.release.dir}" failonerror="false">
+			<fileset dir="${project.root.dir}">
+				<patternset refid="deploy.patchlist"/>
+				<patternset refid="deploy.excludelist"/>
+			</fileset>
+		</copy>
+		
+		<antcall target="rename-runtime" />
+    </target>
+	
+	
+	
+	<!--
+	MAPPINGS
+	================
+	repo							ets-integration
+	~~~~~~~~~~~~~~~~~~~~~			~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	-->
+	
+	<target name="rename-runtime">
+		<antcall target="prepare-installation-script" />	
+	</target>
+	
+	
+	<target name="prepare-installation-script">
+		<!-- place install.sh script into root of distribution for easy execution -->
+		<copy file="${project.root.dir}/deploy/bin/${git.project}/install.sh" tofile="${project.release.dir}/install.sh" failonerror="false" />
+		<exec executable="sh" outputproperty="chmod-output">
+			<arg value="-c" />
+			<arg value="chmod a+x ${project.release.dir}/install.sh" />
+		</exec>
+	</target>
+
+</project>
+
+
